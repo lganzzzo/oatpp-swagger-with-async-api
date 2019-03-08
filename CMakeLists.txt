@@ -15,10 +15,16 @@ ExternalProject_Add(oatpp
         CMAKE_ARGS -DOATPP_BUILD_TESTS=OFF
 )
 
+ExternalProject_Add(oatpp_swagger
+        GIT_REPOSITORY "https://github.com/oatpp/oatpp-swagger.git"
+        GIT_TAG origin/master
+        DEPENDS oatpp
+)
+
 ExternalProject_Add(main
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/main
         INSTALL_COMMAND cmake -E echo "SKIP INSTALL"
-        DEPENDS oatpp
+        DEPENDS oatpp oatpp_swagger
 )
 
 #############################################################################

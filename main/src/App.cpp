@@ -7,8 +7,11 @@
 //
 
 #include "./controller/MyController.hpp"
+#include "./SwaggerComponent.hpp"
 #include "./AppComponent.hpp"
 #include "./Logger.hpp"
+
+#include "oatpp-swagger/AsyncController.hpp"
 
 #include "oatpp/network/server/Server.hpp"
 
@@ -21,16 +24,23 @@
  *  3) run server
  */
 void run() {
-  
+
   AppComponent components; // Create scope Environment components
+  SwaggerComponent swaggerComponent;
   
   /* create ApiControllers and add endpoints to router */
-  
+
   auto router = components.httpRouter.getObject();
-  
+  auto docEndpoints = oatpp::swagger::AsyncController::Endpoints::createShared();
+
   auto myController = MyController::createShared();
   myController->addEndpointsToRouter(router);
-  
+
+  docEndpoints->pushBackAll(myController->getEndpoints());
+
+  auto swaggerController = oatpp::swagger::AsyncController::createShared(docEndpoints);
+  swaggerController->addEndpointsToRouter(router);
+
   /* create server */
   
   oatpp::network::server::Server server(components.serverConnectionProvider.getObject(),
