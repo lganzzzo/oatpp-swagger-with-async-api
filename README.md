@@ -1,6 +1,6 @@
-# Async API Example [![Build Status](https://dev.azure.com/lganzzzo/lganzzzo/_apis/build/status/oatpp.example-async-api?branchName=master)](https://dev.azure.com/lganzzzo/lganzzzo/_build?definitionId=16&branchName=master)
+# oatpp-swagger with Async APIs
 
-Example project how-to use oatpp asynchronous API.
+Simple example how to document Async-Controller endpoints with Swagger-UI
 
 #### More about oat++:
 - Website: [https://oatpp.io](https://oatpp.io)
@@ -26,6 +26,7 @@ Example project how-to use oatpp asynchronous API.
     |
     |- controller/              // Folder containing controller where all endpoints are declared
     |- dto/                     // DTOs are declared here
+    |- SwaggerComponent.hpp     // General info for Swagger
     |- AppComponent.hpp         // Service config
     |- Logger.hpp               // Application Logger
     |- App.cpp                  // main() is here
