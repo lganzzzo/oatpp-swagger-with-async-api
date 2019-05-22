@@ -28,8 +28,7 @@ public:
    *  Create ConnectionProvider component which listens on the port
    */
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, serverConnectionProvider)([] {
-    /* non_blocking connections should be used with AsyncHttpConnectionHandler for AsyncIO */
-    return oatpp::network::server::SimpleTCPConnectionProvider::createShared(8000, true /* true for non_blocking */);
+    return oatpp::network::server::SimpleTCPConnectionProvider::createShared(8000);
   }());
   
   /**
