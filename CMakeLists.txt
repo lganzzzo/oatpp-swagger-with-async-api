@@ -2,44 +2,54 @@ cmake_minimum_required(VERSION 3.1)
 
 set(project_name example-async-api) ## rename your project here
 
-project(${project_name}-loader)
+project(${project_name})
 
-include(ExternalProject)
+set(CMAKE_CXX_STANDARD 11)
 
-#############################################################################
-## load all dependencies
-
-ExternalProject_Add(oatpp
-        GIT_REPOSITORY "https://github.com/oatpp/oatpp.git"
-        GIT_TAG origin/master
-        CMAKE_ARGS -DOATPP_BUILD_TESTS=OFF
+add_library(${project_name}-lib
+        src/AppComponent.hpp
+        src/SwaggerComponent.hpp
+        src/controller/MyController.cpp
+        src/controller/MyController.hpp
+        src/dto/MyDTOs.hpp
 )
 
-ExternalProject_Add(oatpp_swagger
-        GIT_REPOSITORY "https://github.com/oatpp/oatpp-swagger.git"
-        GIT_TAG origin/master
-        DEPENDS oatpp
+target_include_directories(${project_name}-lib PUBLIC src)
+
+## link libs
+
+find_package(oatpp          0.19.4 REQUIRED)
+find_package(oatpp-swagger  0.19.4 REQUIRED)
+
+target_link_libraries(${project_name}-lib
+        PUBLIC oatpp::oatpp
+        PUBLIC oatpp::oatpp-swagger
 )
 
-ExternalProject_Add(main
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/main
-        INSTALL_COMMAND cmake -E echo "SKIP INSTALL"
-        DEPENDS oatpp oatpp_swagger
+## define path to swagger-ui res folder
+
+add_definitions(-DOATPP_SWAGGER_RES_PATH="${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res")
+
+
+## add executables
+
+add_executable(${project_name}-exe
+        src/App.cpp
 )
+target_link_libraries(${project_name}-exe ${project_name}-lib)
+add_dependencies(${project_name}-exe ${project_name}-lib)
 
-#############################################################################
-## make run command
-
-ExternalProject_Get_Property(main BINARY_DIR)
-
-add_custom_target(run
-        COMMAND ${BINARY_DIR}/${project_name}-exe
-        DEPENDS main
-        WORKING_DIRECTORY ${BINARY_DIR}
+add_executable(${project_name}-test
+        test/tests.cpp
 )
+target_link_libraries(${project_name}-test ${project_name}-lib)
+add_dependencies(${project_name}-test ${project_name}-lib)
 
-#############################################################################
-## make test command
+set_target_properties(${project_name}-lib ${project_name}-exe ${project_name}-test PROPERTIES
+        CXX_STANDARD 11
+        CXX_EXTENSIONS OFF
+        CXX_STANDARD_REQUIRED ON
+)
 
 enable_testing()
-add_test(all-tests ${BINARY_DIR}/${project_name}-test)
+add_test(project-tests ${project_name}-test)
